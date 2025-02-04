@@ -1,0 +1,14 @@
+{
+  "/config/app/aws-demo/spring.datasource.url": {
+    "value": "jdbc:mariadb://${host}:${port}/${dbname}?useSSL=false&allowPublicKeyRetrieval=true",
+    "type": "String"
+  },
+  "/config/app/aws-demo/spring.datasource.username": {
+    "value": "${username}",
+    "type": "String"
+  },
+  "/config/app/aws-demo/spring.datasource.password": {
+    "value": "${password}",
+    "type": "String"
+  }
+}
