@@ -27,7 +27,7 @@ jobs:
       - name: AI Validation of SSM Parameters
         run: |
           echo "Validating SSM parameters with AI..."
-          JSON_PAYLOAD=$(jq -c . ssm-parameters.json)
+          JSON_PAYLOAD=$(jq -c . dev/ssm-parameters.json)
           AI_RESPONSE=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
             -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
             -H "Content-Type: application/json" \
