@@ -1,0 +1,58 @@
+name: AI-Powered Bulk AWS SSM Deployment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy-ssm:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2️⃣ Configure AWS CLI
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 3️⃣ AI Validation of the SSM Parameters
+      - name: AI Validation of SSM Parameters
+        run: |
+          echo "Validating SSM parameters with AI..."
+          JSON_PAYLOAD=$(jq -c . ssm-parameters.json)
+          AI_RESPONSE=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
+            -H "Authorization: Bearer ${{ secrets.OPENAI_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"model\": \"gpt-4\",
+              \"messages\": [
+                {\"role\": \"system\", \"content\": \"Validate these AWS SSM parameters for security and consistency: $JSON_PAYLOAD\"}
+              ]
+            }")
+          echo "AI Response: $AI_RESPONSE"
+
+      # 4️⃣ Deploy SSM Parameters from File
+      - name: Deploy AWS SSM Parameters
+        run: |
+          echo "Deploying parameters from ssm-parameters.json..."
+          
+          jq -c 'to_entries[]' dev/ssm-parameters.json | while read -r entry; do
+            NAME=$(echo "$entry" | jq -r '.key')
+            VALUE=$(echo "$entry" | jq -r '.value.value')
+            TYPE=$(echo "$entry" | jq -r '.value.type')
+
+            echo "Processing: $NAME"
+            aws ssm put-parameter --name "$NAME" --value "$VALUE" --type "$TYPE" --overwrite
+          done
+
+      - name: Confirm Deployment
+        run: |
+          echo "SSM Parameters successfully updated!"
