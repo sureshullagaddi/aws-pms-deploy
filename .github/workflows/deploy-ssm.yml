@@ -23,7 +23,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 3️⃣ AI Validation of the SSM Parameters
       - name: AI Validation of SSM Parameters
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -34,21 +33,27 @@ jobs:
           sudo apt-get update && sudo apt-get install -y jq curl || true
 
           # Properly escape JSON payload
-          JSON_PAYLOAD=$(jq -c -r @json dev/ssm-parameters.json)
+          JSON_PAYLOAD=$(jq -c . dev/ssm-parameters.json)
 
+          # Debugging: Print the JSON payload to verify correctness
+          echo "Formatted JSON Payload: $JSON_PAYLOAD"
+          echo "$JSON_PAYLOAD" | jq .
+
+          # Send request to OpenAI API
           AI_RESPONSE=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
             -H "Authorization: Bearer ${OPENAI_API_KEY}" \
             -H "Content-Type: application/json" \
-            -d "{
-              \"model\": \"gpt-4\",
-              \"messages\": [
-                {\"role\": \"system\", \"content\": \"Validate these AWS SSM parameters for security and consistency: ${JSON_PAYLOAD}\"}
+            -d '{
+              "model": "gpt-4",
+              "messages": [
+                {"role": "system", "content": "Validate these AWS SSM parameters for security and consistency: '"${JSON_PAYLOAD}"'"}
               ]
-            }")
+            }')
 
           # Debugging
           echo "AI Response: $(echo "$AI_RESPONSE" | jq -r '.choices[0].message.content')"
           echo "Error: $(echo "$AI_RESPONSE" | jq -r '.error.message')"
+
 
       # 4️⃣ Deploy SSM Parameters from File
       - name: Deploy AWS SSM Parameters
