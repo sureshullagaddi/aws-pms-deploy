@@ -16,7 +16,7 @@
     "type": "String"
   },
   "/config/app/aws-demo/spring.jpa.hibernate.ddl-auto": {
-    "value": "",
+    "value": " ",
     "type": "String"
   },
   "/config/app/aws-demo/spring.jpa.show-sql": {
