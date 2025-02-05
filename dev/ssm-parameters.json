@@ -10,5 +10,29 @@
   "/config/app/aws-demo/spring.datasource.password": {
     "value": "${password}",
     "type": "String"
+  },
+  "/config/app/aws-demo/spring.datasource.hikari.initialization-fail-timeout": {
+    "value": "0",
+    "type": "String"
+  },
+  "/config/app/aws-demo/spring.jpa.hibernate.ddl-auto": {
+    "value": "",
+    "type": "String"
+  },
+  "/config/app/aws-demo/spring.jpa.show-sql": {
+    "value": "true",
+    "type": "String"
+  },
+  "/config/app/aws-demo/spring.jpa.properties.hibernate.dialect": {
+    "value": "org.hibernate.dialect.MariaDBDialect",
+    "type": "String"
+  },
+  "/config/app/aws-demo/spring.jpa.properties.hibernate.default_schema": {
+    "value": "${dbname}",
+    "type": "String"
+  },
+  "/config/app/aws-demo/spring.jpa.properties.hibernate.physical_naming_strategy": {
+    "value": "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl",
+    "type": "String"
   }
 }
